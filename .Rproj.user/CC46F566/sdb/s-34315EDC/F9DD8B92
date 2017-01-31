@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "library(tidyverse)\nlibrary(lubridate)\nadmissions <- read_csv(\"ignore/Admissions.csv\")\ncpd  <- read_csv(\"ignore/CPD Activities.csv\")\nprocedures <- read_csv(\"ignore/Procedures.csv\")\n\nadmissions$Hospital <- as.factor(admissions$Hospital)\nprocedures$Procedure <- as.factor(procedures$Procedure)\ncpd$`Type of CPD Activity` <- as.factor(cpd$`Type of CPD Activity`)\nprocedures[] <- lapply(procedures, gsub, pattern = \"\\n\", replacement = \"\", fixed = TRUE)\ncpd[] <- lapply(cpd, gsub, pattern = \"\\n\", replacement = \" \", fixed = TRUE)\ncpd$`Type of CPD Activity` <- as.factor(cpd$`Type of CPD Activity`)\nadmissions[] <- lapply(admissions, gsub, pattern = \"\\n\", replacement = \"\", fixed = TRUE\ncolnames(cpd)[1] <- \"date\"\ncpd$date <- dmy(cpd$date)\ncolnames(admissions)[1] <- \"date\"\nadmissions$date <- dmy(admissions$date)\n\n# This section below returns a table that counts all procedures done, sorted alphabetically.\nprocedure_count <- procedures %>%\n  group_by(Procedure) %>%\n  mutate(count = n()) %>%\n  select(Procedure, count) %>%\n  distinct(.keep_all = TRUE)\nprocedure_count <- procedure_count[order(procedure_count$Procedure),]\nprocedure_count <- as.data.frame(procedure_count)\n\n# This section looks at notes for arrests recorded\narrest_notes <- procedures %>%\n  filter(Procedure == \"Advanced Life Support (CPR)\")\ncolnames(arrest_notes)[1] <- \"date\"\narrest_notes <- arrest_notes %>%\n  select(date, Procedure, Supervision, Setting, Gender, Age, Notes)\narrest_notes$date <- dmy(arrest_notes$date)\narrest_notes <- arrest_notes[order(arrest_notes$date),]\n\n# This section looks at teaching sessions attended\nteaching_notes <- cpd %>%\n  filter(`Type of CPD Activity` == \"Course\" | `Type of CPD Activity` == \"Seminar\" | `Type of CPD Activity` == \"Training Day\" | `Type of CPD Activity` == \"Conference attended\" | `Type of CPD Activity` == \"Training event attended\")\ncolnames(teaching_notes)[1] <- \"date\"\ncolnames(teaching_notes)[2] <- \"type\"\ncolnames(teaching_notes)[3] <- \"title\"\ncolnames(teaching_notes)[5] <- \"notes\"\nteaching_notes$date <- dmy(teaching_notes$date)\nteaching_notes <- teaching_notes[order(teaching_notes$date),]\n\n# This section looks at teaching sessions provided, plus other CPD\ncpd_notes <- cpd %>%\n  filter(`Type of CPD Activity` == \"Undergraduate teaching delivered\" | `Type of CPD Activity` == \"Audit complteted\" | `Type of CPD Activity` == \"Presentation\")\ncolnames(cpd_notes)[1] <- \"date\"\ncolnames(cpd_notes)[2] <- \"type\"\ncolnames(cpd_notes)[3] <- \"title\"\ncolnames(cpd_notes)[5] <- \"notes\"\ncpd_notes$date <- dmy(cpd_notes$date)\ncpd_notes <- cpd_notes[order(cpd_notes$date),]\n\n# This section looks at all clerk ins to ICU\nicu_admissions <- admissions %>%\n  filter(Role == 'Clerked') %>%\n  select(date, Problem, `Referral source`, Notes)\nicu_admissions <- icu_admissions[order(icu_admissions$date),]\n\n\n\n",
+    "created" : 1485797752345.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3201584967",
+    "id" : "F9DD8B92",
+    "lastKnownWriteTime" : 1485825545,
+    "last_content_update" : 1485825545429,
+    "path" : "C:/Users/callu/Dropbox/Medicine/GATE/QEUH/easilog_report/easilog.R",
+    "project_path" : "easilog.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
