@@ -1,14 +1,14 @@
 {
     "collab_server" : "",
-    "contents" : ".Rproj\n.user\n.Rhistory\n.RData\n.Ruserdata\nignore/\neasilog_report.html\n",
+    "contents" : ".Rproj.user\n.Rproj\n.Rhistory\n.RData\n.Ruserdata\nignore/\neasilog_report.html\n",
     "created" : 1485832477786.000,
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "509630125",
+    "hash" : "1010694234",
     "id" : "9906470E",
-    "lastKnownWriteTime" : 1485832482,
-    "last_content_update" : 1485832482083,
+    "lastKnownWriteTime" : 1485832590,
+    "last_content_update" : 1485832590588,
     "path" : "C:/Users/callu/Dropbox/Medicine/GATE/QEUH/easilog_report/.gitignore",
     "project_path" : ".gitignore",
     "properties" : {
