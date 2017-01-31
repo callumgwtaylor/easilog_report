@@ -1,0 +1,115 @@
+---
+title: "Easilog Report"
+author: "Callum Taylor"
+date: "30 January 2017"
+output:
+  html_document:
+    theme: "cerulean"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+admissions <- read_csv("ignore/Admissions.csv")
+cpd  <- read_csv("ignore/CPD Activities.csv")
+procedures <- read_csv("ignore/Procedures.csv")
+
+admissions$Hospital <- as.factor(admissions$Hospital)
+procedures$Procedure <- as.factor(procedures$Procedure)
+cpd$`Type of CPD Activity` <- as.factor(cpd$`Type of CPD Activity`)
+procedures[] <- lapply(procedures, gsub, pattern = "\n", replacement = "", fixed = TRUE)
+cpd[] <- lapply(cpd, gsub, pattern = "\n", replacement = " ", fixed = TRUE)
+cpd$`Type of CPD Activity` <- as.factor(cpd$`Type of CPD Activity`)
+admissions[] <- lapply(admissions, gsub, pattern = "\n", replacement = "", fixed = TRUE)
+colnames(cpd)[1] <- "date"
+cpd$date <- dmy(cpd$date)
+colnames(admissions)[1] <- "date"
+admissions$date <- dmy(admissions$date)
+```
+
+## Intensive Care CT2
+
+### Admissions Clerked In
+```{r admissions, echo=FALSE}
+icu_admissions <- admissions %>%
+  filter(Role == 'Clerked') %>%
+  select(date, Problem, `Referral source`, Notes)
+icu_admissions <- icu_admissions[order(icu_admissions$date),]
+```
+```{r admissions_table, echo=FALSE, results='asis'}
+knitr::kable(icu_admissions)
+```
+
+### Patients Reviewed Outside The Unit
+```{r reviews, echo=FALSE}
+icu_reviews <- admissions %>%
+  filter(Role != 'Clerked') %>%
+  select(date, Problem, Setting, `Referral source`, Outcome, Notes)
+icu_reviews <- icu_reviews[order(icu_reviews$date),]
+```
+```{r reviews_table, echo=FALSE, results='asis'}
+knitr::kable(icu_reviews)
+```
+
+### Teaching Attended
+```{r teaching_notes, echo=FALSE}
+teaching_notes <- cpd %>%
+  filter(`Type of CPD Activity` == "Course" | `Type of CPD Activity` == "Seminar" | `Type of CPD Activity` == "Training Day" | `Type of CPD Activity` == "Conference attended" | `Type of CPD Activity` == "Training event attended")
+colnames(teaching_notes)[1] <- "date"
+colnames(teaching_notes)[2] <- "type"
+colnames(teaching_notes)[3] <- "title"
+colnames(teaching_notes)[5] <- "notes"
+teaching_notes <- teaching_notes[order(teaching_notes$date),]
+```
+```{r teaching_table, echo = FALSE, results='asis'}
+knitr::kable(teaching_notes)
+```
+
+### Teaching Provided, Audits Completed, Presentations
+```{r cpd_notes, echo=FALSE}
+# This section looks at teaching sessions provided, plus other CPD
+cpd_notes <- cpd %>%
+  filter(`Type of CPD Activity` == "Undergraduate teaching delivered" | `Type of CPD Activity` == "Audit complteted" | `Type of CPD Activity` == "Presentation")
+colnames(cpd_notes)[1] <- "date"
+colnames(cpd_notes)[2] <- "type"
+colnames(cpd_notes)[3] <- "title"
+colnames(cpd_notes)[5] <- "notes"
+cpd_notes <- cpd_notes[order(cpd_notes$date),]
+```
+```{r cpd_table, echo = FALSE, results='asis'}
+knitr::kable(cpd_notes)
+```
+
+
+### Procedures and counts
+```{r list_procedures, echo=FALSE}
+procedure_count <- procedures %>%
+  group_by(Procedure) %>%
+  mutate(count = n()) %>%
+  select(Procedure, count) %>%
+  distinct(.keep_all = TRUE)
+procedure_count <- procedure_count[order(procedure_count$Procedure),]
+procedure_count <- as.data.frame(procedure_count)
+```
+```{r table_procedures, echo = FALSE, results='asis'}
+knitr::kable(procedure_count)
+```
+
+#### Arrest Notes
+```{r arrest_table, echo=FALSE}
+# This section looks at notes for arrests recorded
+arrest_notes <- procedures %>%
+  filter(Procedure == "Advanced Life Support (CPR)")
+colnames(arrest_notes)[1] <- "entry_date"
+arrest_notes <- arrest_notes %>%
+  select(entry_date, Procedure, Supervision, Setting, Gender, Age, Notes)
+arrest_notes$entry_date <- dmy(arrest_notes$entry_date)
+arrest_notes <- arrest_notes[order(arrest_notes$entry_date),]
+```
+```{r arrest_notes, echo=FALSE, results='asis'}
+knitr::kable(arrest_notes)
+```
+
+
+
