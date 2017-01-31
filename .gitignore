@@ -1,8 +1,8 @@
-.Rproj.user/
+.Rproj.user
 .Rproj
 .Rhistory
 .RData
 .Ruserdata
 ignore/
 easilog_report.html
-easilog_report.Rproj
+/easilog_report.Rproj
