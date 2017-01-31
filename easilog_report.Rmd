@@ -29,7 +29,7 @@ admissions$date <- dmy(admissions$date)
 ```
 
 ## Intensive Care CT2
-
+This logbook report contains details about admissions, reviews, procedures, and CPD that I remembered to log on easilog. It is mostly complete.
 ### Admissions Clerked In
 ```{r admissions, echo=FALSE}
 icu_admissions <- admissions %>%
